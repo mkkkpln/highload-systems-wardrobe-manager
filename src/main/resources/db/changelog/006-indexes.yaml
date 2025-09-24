@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: idx-items-owner
+      author: mkkkpln
+      changes:
+        - createIndex:
+            tableName: wardrobe_items
+            indexName: ix_items_owner_created
+            columns:
+              - column: { name: owner_id }
+              - column: { name: created_at, descending: true }
+              - column: { name: id, descending: true }
