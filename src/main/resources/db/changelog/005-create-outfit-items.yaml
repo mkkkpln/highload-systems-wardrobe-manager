@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: outfit-items-1
+      author: mkkkpln
+      changes:
+        - createTable:
+            tableName: outfit_items
+            columns:
+              - column:
+                  name: outfit_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_oit_outfit
+                    references: outfits(id)
+                    deleteCascade: true
+              - column:
+                  name: item_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_oit_item
+                    references: wardrobe_items(id)
+                    deleteCascade: true
+              - column:
+                  name: role
+                  type: VARCHAR(24)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position_index
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: outfit_items
+            columnNames: outfit_id, item_id
+        - addUniqueConstraint:
+            tableName: outfit_items
+            columnNames: outfit_id, position_index
+            constraintName: uq_outfit_position

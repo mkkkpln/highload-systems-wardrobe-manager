@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/001-create-users.yaml
+  - include:
+      file: db/changelog/002-create-wardrobe-items.yaml
+  - include:
+      file: db/changelog/003-create-outfits.yaml
+  - include:
+      file: db/changelog/004-create-tags.yaml
+  - include:
+      file: db/changelog/005-create-outfit-items.yaml
+  - include:
+      file: db/changelog/006-indexes.yaml
