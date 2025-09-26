@@ -1,6 +1,10 @@
 package com.example.highloadsystemswardrobemanager;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,17 +16,20 @@ public class Outfit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(max = 120)
     @Column(name = "title", nullable = false, length = 120)
     private String title;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"items", "outfits"}) // не сериализуем коллекции пользователя
     private User user;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private java.time.Instant createdAt = java.time.Instant.now();
+    private Instant createdAt;
 
-
+    // многие-ко-многим с таблицей-связкой outfit_items
     @ManyToMany
     @JoinTable(
             name = "outfit_items",
@@ -38,33 +45,23 @@ public class Outfit {
         this.user = user;
     }
 
-    // 🔹 Геттеры/сеттеры
-    public Long getId() {
-        return id;
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = Instant.now();
     }
 
-    public String getTitle() {
-        return title;
-    }
+    // getters/setters
+    public Long getId() { return id; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    public User getUser() {
-        return user;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set<WardrobeItem> getItems() {
-        return items;
-    }
-
-    public void setItems(Set<WardrobeItem> items) {
-        this.items = items;
-    }
+    public Set<WardrobeItem> getItems() { return items; }
+    public void setItems(Set<WardrobeItem> items) { this.items = items; }
 }

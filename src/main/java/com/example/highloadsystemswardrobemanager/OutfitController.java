@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/outfits")
+@RequestMapping("/outfits")
 public class OutfitController {
 
     private final OutfitRepository outfitRepository;
