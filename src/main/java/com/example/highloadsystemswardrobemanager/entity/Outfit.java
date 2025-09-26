@@ -1,9 +1,6 @@
-package com.example.highloadsystemswardrobemanager;
+package com.example.highloadsystemswardrobemanager.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,20 +13,16 @@ public class Outfit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(max = 120)
     @Column(name = "title", nullable = false, length = 120)
     private String title;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties({"items", "outfits"}) // не сериализуем коллекции пользователя
     private User user;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    // многие-ко-многим с таблицей-связкой outfit_items
     @ManyToMany
     @JoinTable(
             name = "outfit_items",

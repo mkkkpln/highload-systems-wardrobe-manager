@@ -1,9 +1,6 @@
-package com.example.highloadsystemswardrobemanager;
+package com.example.highloadsystemswardrobemanager.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.time.Instant;
 
 @Entity
@@ -14,30 +11,22 @@ public class WardrobeItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // владелец вещи
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
-    @JsonIgnoreProperties({"items", "outfits"}) // не сериализуем коллекции пользователя
     private User owner;
 
-    @NotBlank
-    @Size(max = 32)
     @Column(name = "type", nullable = false, length = 32)
     private String type;
 
-    @Size(max = 100)
     @Column(name = "brand", length = 100)
     private String brand;
 
-    @Size(max = 40)
     @Column(name = "color", length = 40)
     private String color;
 
-    @Size(max = 16)
     @Column(name = "season", length = 16)
     private String season;
 
-    @NotBlank
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 

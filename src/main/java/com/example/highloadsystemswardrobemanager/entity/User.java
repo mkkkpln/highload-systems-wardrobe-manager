@@ -1,8 +1,6 @@
-package com.example.highloadsystemswardrobemanager;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+package com.example.highloadsystemswardrobemanager.entity;
 
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
@@ -13,25 +11,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email
-    @NotBlank
-    @Size(max = 255)
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @NotBlank
-    @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String name;
 
-    // Один пользователь владеет многими предметами
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // чтобы не было рекурсии в ответе
     private List<WardrobeItem> items;
 
-    // Один пользователь имеет много образов
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // чтобы не было рекурсии в ответе
     private List<Outfit> outfits;
 
     // getters/setters
