@@ -35,7 +35,8 @@
 
 Схема БД состоит из четырёх основных таблиц:
 
-<img width="764" height="344" alt="image" src="https://github.com/user-attachments/assets/73cdaa9c-ee82-4759-9f88-dff6a8f15b0a" />
+<img width="555" height="460" alt="image" src="https://github.com/user-attachments/assets/95cd5c46-411c-4169-a122-23a3694dc94b" />
+
 
 
 ## Структура проекта
