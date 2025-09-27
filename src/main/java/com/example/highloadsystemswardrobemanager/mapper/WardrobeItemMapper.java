@@ -2,16 +2,22 @@ package com.example.highloadsystemswardrobemanager.mapper;
 
 import com.example.highloadsystemswardrobemanager.dto.WardrobeItemDto;
 import com.example.highloadsystemswardrobemanager.entity.WardrobeItem;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface WardrobeItemMapper {
 
-    // owner.id -> ownerId
+    // entity -> dto: owner.id -> ownerId
     @Mapping(source = "owner.id", target = "ownerId")
     WardrobeItemDto toDto(WardrobeItem entity);
 
-    // Обратное маппирование ownerId -> owner НЕ делаем в маппере,
-    // потому что нужно грузить User из БД и кидать 404 — это задача сервиса.
+    // dto -> entity: owner НЕ маппим (ставим в сервисе)
+    @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "createdAt", ignore = true) // пусть БД или @PrePersist проставит
+    WardrobeItem toEntity(WardrobeItemDto dto);
+
+    // обновление существующей entity из dto
+    @Mapping(target = "owner", ignore = true)     // owner не трогаем
+    @Mapping(target = "createdAt", ignore = true) // createdAt не меняем
+    void updateEntityFromDto(WardrobeItemDto dto, @MappingTarget WardrobeItem entity);
 }

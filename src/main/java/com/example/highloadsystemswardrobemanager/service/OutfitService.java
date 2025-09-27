@@ -1,13 +1,13 @@
 package com.example.highloadsystemswardrobemanager.service;
 
-import com.example.highloadsystemswardrobemanager.entity.Outfit;
-import com.example.highloadsystemswardrobemanager.repository.OutfitRepository;
-import com.example.highloadsystemswardrobemanager.entity.User;
-import com.example.highloadsystemswardrobemanager.repository.UserRepository;
-import com.example.highloadsystemswardrobemanager.entity.WardrobeItem;
-import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
 import com.example.highloadsystemswardrobemanager.dto.OutfitDto;
+import com.example.highloadsystemswardrobemanager.dto.OutfitItemLinkDto;
+import com.example.highloadsystemswardrobemanager.entity.*;
 import com.example.highloadsystemswardrobemanager.exception.NotFoundException;
+import com.example.highloadsystemswardrobemanager.mapper.OutfitMapper;
+import com.example.highloadsystemswardrobemanager.repository.OutfitRepository;
+import com.example.highloadsystemswardrobemanager.repository.UserRepository;
+import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,60 +15,67 @@ import java.util.List;
 
 @Service
 public class OutfitService {
+
     private final OutfitRepository outfitRepository;
     private final UserRepository userRepository;
     private final WardrobeItemRepository itemRepository;
+    private final OutfitMapper mapper;
 
-    public OutfitService(OutfitRepository outfitRepository, UserRepository userRepository, WardrobeItemRepository itemRepository) {
+    public OutfitService(OutfitRepository outfitRepository,
+                         UserRepository userRepository,
+                         WardrobeItemRepository itemRepository,
+                         OutfitMapper mapper) {
         this.outfitRepository = outfitRepository;
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
+        this.mapper = mapper;
     }
 
-    public List<Outfit> getAll() {
-        return outfitRepository.findAll();
+    public List<OutfitDto> getAll() {
+        return outfitRepository.findAll().stream().map(mapper::toDto).toList();
     }
 
-    public Outfit getByIdOr404(Long id) {
-        return outfitRepository.findById(id)
+    public OutfitDto getByIdOr404(Long id) {
+        return outfitRepository.findById(id).map(mapper::toDto)
                 .orElseThrow(() -> new NotFoundException("Outfit not found: " + id));
     }
 
     @Transactional
-    public Outfit create(OutfitDto dto) {
+    public OutfitDto create(OutfitDto dto) {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new NotFoundException("User not found: " + dto.getUserId()));
 
-        Outfit outfit = new Outfit();
-        outfit.setTitle(dto.getTitle());
+        Outfit outfit = mapper.toEntity(dto);
         outfit.setUser(user);
 
-        if (dto.getItemIds() != null) {
-            for (Long itemId : dto.getItemIds()) {
-                WardrobeItem item = itemRepository.findById(itemId)
-                        .orElseThrow(() -> new NotFoundException("Item not found: " + itemId));
-                outfit.getItems().add(item);
+        if (dto.getItems() != null) {
+            for (OutfitItemLinkDto link : dto.getItems()) {
+                WardrobeItem item = itemRepository.findById(link.getItemId())
+                        .orElseThrow(() -> new NotFoundException("Item not found: " + link.getItemId()));
+                outfit.addItem(item, link.getRole());
             }
         }
 
-        return outfitRepository.save(outfit);
+        return mapper.toDto(outfitRepository.save(outfit));
     }
 
     @Transactional
-    public Outfit update(Long id, OutfitDto dto) {
-        Outfit outfit = getByIdOr404(id);
-        outfit.setTitle(dto.getTitle());
+    public OutfitDto update(Long id, OutfitDto dto) {
+        Outfit outfit = outfitRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Outfit not found: " + id));
 
-        if (dto.getItemIds() != null) {
-            outfit.getItems().clear();
-            for (Long itemId : dto.getItemIds()) {
-                WardrobeItem item = itemRepository.findById(itemId)
-                        .orElseThrow(() -> new NotFoundException("Item not found: " + itemId));
-                outfit.getItems().add(item);
+        outfit.setTitle(dto.getTitle());
+        outfit.clearItems();
+
+        if (dto.getItems() != null) {
+            for (OutfitItemLinkDto link : dto.getItems()) {
+                WardrobeItem item = itemRepository.findById(link.getItemId())
+                        .orElseThrow(() -> new NotFoundException("Item not found: " + link.getItemId()));
+                outfit.addItem(item, link.getRole());
             }
         }
 
-        return outfitRepository.save(outfit);
+        return mapper.toDto(outfitRepository.save(outfit));
     }
 
     public void delete(Long id) {

@@ -1,60 +1,68 @@
 package com.example.highloadsystemswardrobemanager.service;
 
-import com.example.highloadsystemswardrobemanager.entity.WardrobeItem;
-import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
-import com.example.highloadsystemswardrobemanager.entity.User;
-import com.example.highloadsystemswardrobemanager.repository.UserRepository;
 import com.example.highloadsystemswardrobemanager.dto.WardrobeItemDto;
+import com.example.highloadsystemswardrobemanager.entity.WardrobeItem;
+import com.example.highloadsystemswardrobemanager.entity.User;
 import com.example.highloadsystemswardrobemanager.exception.NotFoundException;
+import com.example.highloadsystemswardrobemanager.mapper.WardrobeItemMapper;
+import com.example.highloadsystemswardrobemanager.repository.UserRepository;
+import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WardrobeItemService {
     private final WardrobeItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final WardrobeItemMapper mapper;
 
-    public WardrobeItemService(WardrobeItemRepository itemRepository, UserRepository userRepository) {
+    public WardrobeItemService(WardrobeItemRepository itemRepository,
+                               UserRepository userRepository,
+                               WardrobeItemMapper mapper) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.mapper = mapper;
     }
 
-    public List<WardrobeItem> getAll() {
-        return itemRepository.findAll();
+    public List<WardrobeItemDto> getAll() {
+        return itemRepository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public WardrobeItem getByIdOr404(Long id) {
+    public WardrobeItemDto getByIdOr404(Long id) {
         return itemRepository.findById(id)
+                .map(mapper::toDto)
                 .orElseThrow(() -> new NotFoundException("Item not found: " + id));
     }
 
-    public WardrobeItem create(WardrobeItemDto dto) {
+    public WardrobeItemDto create(WardrobeItemDto dto) {
         User owner = userRepository.findById(dto.getOwnerId())
                 .orElseThrow(() -> new NotFoundException("Owner not found: " + dto.getOwnerId()));
 
-        WardrobeItem item = new WardrobeItem();
-        item.setOwner(owner);
-        item.setType(dto.getType());
-        item.setBrand(dto.getBrand());
-        item.setColor(dto.getColor());
-        item.setSeason(dto.getSeason());
-        item.setImageUrl(dto.getImageUrl());
+        WardrobeItem entity = mapper.toEntity(dto);
+        entity.setOwner(owner);
 
-        return itemRepository.save(item);
+        return mapper.toDto(itemRepository.save(entity));
     }
 
-    public WardrobeItem update(Long id, WardrobeItemDto dto) {
-        WardrobeItem item = getByIdOr404(id);
-        item.setType(dto.getType());
-        item.setBrand(dto.getBrand());
-        item.setColor(dto.getColor());
-        item.setSeason(dto.getSeason());
-        item.setImageUrl(dto.getImageUrl());
-        return itemRepository.save(item);
+    public WardrobeItemDto update(Long id, WardrobeItemDto dto) {
+        WardrobeItem entity = itemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Item not found: " + id));
+
+        // обновляем через маппер
+        mapper.updateEntityFromDto(dto, entity);
+
+        return mapper.toDto(itemRepository.save(entity));
     }
 
     public void delete(Long id) {
+        if (!itemRepository.existsById(id)) {
+            throw new NotFoundException("Item not found: " + id);
+        }
         itemRepository.deleteById(id);
     }
 }

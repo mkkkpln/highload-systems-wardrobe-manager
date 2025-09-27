@@ -11,9 +11,8 @@ public class OutfitDto {
 
     private Long userId;
 
-    private List<Long> itemIds;
+    private List<OutfitItemLinkDto> items; // <— тут
 
-    // 🔹 Геттеры/сеттеры
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -23,6 +22,6 @@ public class OutfitDto {
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
-    public List<Long> getItemIds() { return itemIds; }
-    public void setItemIds(List<Long> itemIds) { this.itemIds = itemIds; }
+    public List<OutfitItemLinkDto> getItems() { return items; }
+    public void setItems(List<OutfitItemLinkDto> items) { this.items = items; }
 }

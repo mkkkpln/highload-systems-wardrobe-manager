@@ -23,13 +23,9 @@ public class Outfit {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @ManyToMany
-    @JoinTable(
-            name = "outfit_items",
-            joinColumns = @JoinColumn(name = "outfit_id"),
-            inverseJoinColumns = @JoinColumn(name = "item_id")
-    )
-    private Set<WardrobeItem> items = new HashSet<>();
+    // ✅ связь через OutfitItem (правильный вариант Many-to-Many с дополнительным полем)
+    @OneToMany(mappedBy = "outfit", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OutfitItem> outfitItems = new HashSet<>();
 
     public Outfit() {}
 
@@ -43,7 +39,20 @@ public class Outfit {
         if (createdAt == null) createdAt = Instant.now();
     }
 
-    // getters/setters
+    // Хелперы для управления связями
+    public void addItem(WardrobeItem item, String role) {
+        OutfitItem link = new OutfitItem();
+        link.setOutfit(this);
+        link.setItem(item);
+        link.setRole(role);
+        this.outfitItems.add(link);
+    }
+
+    public void clearItems() {
+        this.outfitItems.clear();
+    }
+
+    // Getters/Setters
     public Long getId() { return id; }
 
     public String getTitle() { return title; }
@@ -55,6 +64,6 @@ public class Outfit {
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public Set<WardrobeItem> getItems() { return items; }
-    public void setItems(Set<WardrobeItem> items) { this.items = items; }
+    public Set<OutfitItem> getOutfitItems() { return outfitItems; }
+    public void setOutfitItems(Set<OutfitItem> outfitItems) { this.outfitItems = outfitItems; }
 }
