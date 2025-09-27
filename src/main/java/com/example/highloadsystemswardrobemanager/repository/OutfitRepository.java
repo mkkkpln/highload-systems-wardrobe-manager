@@ -1,5 +1,6 @@
-package com.example.highloadsystemswardrobemanager;
+package com.example.highloadsystemswardrobemanager.repository;
 
+import com.example.highloadsystemswardrobemanager.entity.Outfit;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OutfitRepository extends JpaRepository<Outfit, Long> {
