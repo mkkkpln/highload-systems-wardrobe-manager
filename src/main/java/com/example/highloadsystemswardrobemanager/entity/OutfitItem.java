@@ -1,39 +1,44 @@
 package com.example.highloadsystemswardrobemanager.entity;
 
+import com.example.highloadsystemswardrobemanager.entity.enums.OutfitRole;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "outfit_items")
 public class OutfitItem {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private OutfitItemId id = new OutfitItemId();
 
-    // 🔗 связь с Outfit
     @ManyToOne
+    @MapsId("outfitId") // связывает с PK
     @JoinColumn(name = "outfit_id", nullable = false)
     private Outfit outfit;
 
-    // 🔗 связь с WardrobeItem
     @ManyToOne
+    @MapsId("itemId") // связывает с PK
     @JoinColumn(name = "item_id", nullable = false)
     private WardrobeItem item;
 
-    // Дополнительное поле (например, роль вещи в образе)
-    @Column(name = "role", length = 50)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", length = 50, nullable = false)
+    private OutfitRole role;
+
+    @Column(name = "position_index", nullable = false)
+    private int positionIndex;
 
     public OutfitItem() {}
 
-    public OutfitItem(Outfit outfit, WardrobeItem item, String role) {
+    public OutfitItem(Outfit outfit, WardrobeItem item, OutfitRole role, int positionIndex) {
         this.outfit = outfit;
         this.item = item;
         this.role = role;
+        this.positionIndex = positionIndex;
+        this.id = new OutfitItemId(outfit.getId(), item.getId());
     }
 
-    // getters/setters
-    public Long getId() { return id; }
+    public OutfitItemId getId() { return id; }
+    public void setId(OutfitItemId id) { this.id = id; }
 
     public Outfit getOutfit() { return outfit; }
     public void setOutfit(Outfit outfit) { this.outfit = outfit; }
@@ -41,6 +46,9 @@ public class OutfitItem {
     public WardrobeItem getItem() { return item; }
     public void setItem(WardrobeItem item) { this.item = item; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public OutfitRole getRole() { return role; }
+    public void setRole(OutfitRole role) { this.role = role; }
+
+    public int getPositionIndex() { return positionIndex; }
+    public void setPositionIndex(int positionIndex) { this.positionIndex = positionIndex; }
 }

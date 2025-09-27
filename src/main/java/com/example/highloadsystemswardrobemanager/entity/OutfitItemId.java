@@ -21,11 +21,16 @@ public class OutfitItemId implements Serializable {
     public Long getItemId() { return itemId; }
     public void setItemId(Long itemId) { this.itemId = itemId; }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof OutfitItemId)) return false;
         OutfitItemId that = (OutfitItemId) o;
         return Objects.equals(outfitId, that.outfitId) && Objects.equals(itemId, that.itemId);
     }
-    @Override public int hashCode() { return Objects.hash(outfitId, itemId); }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(outfitId, itemId);
+    }
 }

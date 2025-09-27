@@ -1,5 +1,6 @@
 package com.example.highloadsystemswardrobemanager.entity;
 
+import com.example.highloadsystemswardrobemanager.entity.enums.OutfitRole;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.HashSet;
@@ -23,7 +24,7 @@ public class Outfit {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    // ✅ связь через OutfitItem (правильный вариант Many-to-Many с дополнительным полем)
+    // ✅ связь через OutfitItem
     @OneToMany(mappedBy = "outfit", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OutfitItem> outfitItems = new HashSet<>();
 
@@ -39,12 +40,9 @@ public class Outfit {
         if (createdAt == null) createdAt = Instant.now();
     }
 
-    // Хелперы для управления связями
-    public void addItem(WardrobeItem item, String role) {
-        OutfitItem link = new OutfitItem();
-        link.setOutfit(this);
-        link.setItem(item);
-        link.setRole(role);
+    // ✅ теперь используем OutfitRole
+    public void addItem(WardrobeItem item, OutfitRole role, int positionIndex) {
+        OutfitItem link = new OutfitItem(this, item, role, positionIndex);
         this.outfitItems.add(link);
     }
 

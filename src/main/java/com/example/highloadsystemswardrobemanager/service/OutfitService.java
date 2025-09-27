@@ -49,10 +49,11 @@ public class OutfitService {
         outfit.setUser(user);
 
         if (dto.getItems() != null) {
+            int idx = 0;
             for (OutfitItemLinkDto link : dto.getItems()) {
                 WardrobeItem item = itemRepository.findById(link.getItemId())
                         .orElseThrow(() -> new NotFoundException("Item not found: " + link.getItemId()));
-                outfit.addItem(item, link.getRole());
+                outfit.addItem(item, link.getRole(), idx++);
             }
         }
 
@@ -68,10 +69,11 @@ public class OutfitService {
         outfit.clearItems();
 
         if (dto.getItems() != null) {
+            int idx = 0;
             for (OutfitItemLinkDto link : dto.getItems()) {
                 WardrobeItem item = itemRepository.findById(link.getItemId())
                         .orElseThrow(() -> new NotFoundException("Item not found: " + link.getItemId()));
-                outfit.addItem(item, link.getRole());
+                outfit.addItem(item, link.getRole(), idx++);
             }
         }
 

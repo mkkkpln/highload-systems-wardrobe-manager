@@ -1,12 +1,13 @@
 package com.example.highloadsystemswardrobemanager.entity;
 
+import com.example.highloadsystemswardrobemanager.entity.enums.ItemType;
+import com.example.highloadsystemswardrobemanager.entity.enums.Season;
 import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
 @Table(name = "wardrobe_items")
 public class WardrobeItem {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,8 +16,9 @@ public class WardrobeItem {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 32)
-    private String type;
+    private ItemType type;
 
     @Column(name = "brand", length = 100)
     private String brand;
@@ -24,8 +26,9 @@ public class WardrobeItem {
     @Column(name = "color", length = 40)
     private String color;
 
-    @Column(name = "season", length = 16)
-    private String season;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "season", nullable = false, length = 16)
+    private Season season;
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
@@ -34,7 +37,7 @@ public class WardrobeItem {
     private Instant createdAt;
 
     @PrePersist
-    protected void onCreate() {
+    void onCreate() {
         if (createdAt == null) createdAt = Instant.now();
     }
 
@@ -45,8 +48,8 @@ public class WardrobeItem {
     public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public ItemType getType() { return type; }
+    public void setType(ItemType type) { this.type = type; }
 
     public String getBrand() { return brand; }
     public void setBrand(String brand) { this.brand = brand; }
@@ -54,8 +57,8 @@ public class WardrobeItem {
     public String getColor() { return color; }
     public void setColor(String color) { this.color = color; }
 
-    public String getSeason() { return season; }
-    public void setSeason(String season) { this.season = season; }
+    public Season getSeason() { return season; }
+    public void setSeason(Season season) { this.season = season; }
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
