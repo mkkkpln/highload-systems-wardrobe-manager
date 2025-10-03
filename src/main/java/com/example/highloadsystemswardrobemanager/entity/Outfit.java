@@ -24,7 +24,7 @@ public class Outfit {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    // ✅ связь через OutfitItem
+    // связь через OutfitItem
     @OneToMany(mappedBy = "outfit", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OutfitItem> outfitItems = new HashSet<>();
 
@@ -40,7 +40,7 @@ public class Outfit {
         if (createdAt == null) createdAt = Instant.now();
     }
 
-    // ✅ теперь используем OutfitRole
+    // теперь используем OutfitRole
     public void addItem(WardrobeItem item, OutfitRole role, int positionIndex) {
         OutfitItem link = new OutfitItem(this, item, role, positionIndex);
         this.outfitItems.add(link);
