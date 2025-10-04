@@ -20,7 +20,6 @@ public interface OutfitMapper {
     @Mapping(target = "createdAt", ignore = true)
     Outfit toEntity(OutfitDto dto);
 
-    // helper
     default List<OutfitItemLinkDto> toLinks(Outfit outfit) {
         return outfit.getOutfitItems().stream().map(oi -> {
             OutfitItemLinkDto d = new OutfitItemLinkDto();
