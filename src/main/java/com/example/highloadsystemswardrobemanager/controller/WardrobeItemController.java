@@ -5,6 +5,7 @@ import com.example.highloadsystemswardrobemanager.service.WardrobeItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,40 @@ public class WardrobeItemController {
     public ResponseEntity<List<WardrobeItemDto>> getAll() {
         return ResponseEntity.ok(itemService.getAll());
     }
+
+    // пагинация с total count
+    @Operation(summary = "Получить вещи с пагинацией", description = "Возвращает список вещей постранично и добавляет X-Total-Count в заголовок ответа")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Страница успешно получена"),
+            @ApiResponse(responseCode = "400", description = "Некорректные параметры пагинации")
+    })
+    @GetMapping("/paged")
+    public ResponseEntity<List<WardrobeItemDto>> getPagedWithCount(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        var pageResult = itemService.getPagedWithCount(page, size);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Count", String.valueOf(pageResult.getTotalElements()));
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pageResult.getContent());
+    }
+
+    //  бесконечная прокрутка
+    @Operation(summary = "Получить вещи (бесконечная прокрутка)", description = "Возвращает следующую часть списка без общего количества записей")
+    @ApiResponse(responseCode = "200", description = "Часть списка успешно получена")
+    @GetMapping("/scroll")
+    public ResponseEntity<List<WardrobeItemDto>> getInfiniteScroll(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit) {
+
+        var items = itemService.getInfiniteScroll(offset, limit);
+        return ResponseEntity.ok(items);
+    }
+
 
     @Operation(summary = "Получить вещь по ID", description = "Возвращает вещь по её уникальному идентификатору")
     @ApiResponses({

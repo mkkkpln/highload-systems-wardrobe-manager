@@ -1,8 +1,10 @@
 version: '3.8'
 services:
+  # ---------- База данных ----------
   db:
     image: postgres:15
     container_name: wardrobe-db
+    restart: always
     environment:
       POSTGRES_DB: wardrobe
       POSTGRES_USER: wardrobe
@@ -11,6 +13,21 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  # ---------- Приложение ----------
+  app:
+    build: .
+    container_name: wardrobe-app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_URL: jdbc:postgresql://db:5432/wardrobe
+      DB_USER: wardrobe
+      DB_PASSWORD: wardrobe
+    ports:
+      - "8080:8080"
 
 volumes:
   postgres_data:
