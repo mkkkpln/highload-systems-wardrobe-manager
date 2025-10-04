@@ -7,6 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 
 @RestController
 @RequestMapping("/users")
@@ -18,26 +22,49 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Получить список пользователей", description = "Возвращает всех пользователей системы")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Список пользователей успешно получен")
+    })
     @GetMapping
     public ResponseEntity<List<UserDto>> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }
 
+    @Operation(
+            summary = "Получить пользователя по ID",
+            description = "Возвращает информацию о пользователе по его уникальному идентификатору."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь найден"),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден"),
+            @ApiResponse(responseCode = "400", description = "Некорректный ID")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getByIdOr404(id));
     }
 
+    @Operation(
+            summary = "Создать нового пользователя",
+            description = "Создает запись пользователя по переданным данным в теле запроса."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Пользователь успешно создан"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные в теле запроса")
+    })
     @PostMapping
     public ResponseEntity<UserDto> create(@RequestBody UserDto userDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(userDto));
     }
 
+    @Operation(summary = "Обновить данные пользователя", description = "Изменяет данные пользователя по ID")
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.update(id, userDto));
     }
 
+    @Operation(summary = "Удалить пользователя", description = "Удаляет пользователя по ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
