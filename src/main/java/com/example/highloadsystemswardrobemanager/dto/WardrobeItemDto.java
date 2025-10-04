@@ -25,7 +25,6 @@ public class WardrobeItemDto {
     @NotNull
     private Long ownerId;
 
-    // 🔹 Геттеры/сеттеры
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

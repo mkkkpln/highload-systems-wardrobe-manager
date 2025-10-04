@@ -15,7 +15,6 @@ public class UserDto {
     @Size(min = 2, max = 100)
     private String name;
 
-    // 🔹 Геттеры/сеттеры
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
