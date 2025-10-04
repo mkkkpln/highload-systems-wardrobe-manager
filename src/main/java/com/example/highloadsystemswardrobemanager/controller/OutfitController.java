@@ -58,6 +58,32 @@ public class OutfitController {
         return ResponseEntity.ok(outfitService.update(id, dto));
     }
 
+    @Operation(summary = "Получить образы с пагинацией",
+            description = "Возвращает список образов постранично (не более 50 за запрос). В заголовке ответа указывается общее количество записей.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Образы успешно получены")
+    })
+    @GetMapping("/paged")
+    public ResponseEntity<List<OutfitDto>> getPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        var result = outfitService.getPaged(page, size);
+        return ResponseEntity
+                .ok()
+                .header("X-Total-Count", String.valueOf(result.totalCount()))
+                .body(result.items());
+    }
+
+    @Operation(summary = "Бесконечная прокрутка образов",
+            description = "Возвращает часть списка образов без указания общего количества записей (для 'ленты').")
+    @GetMapping("/scroll")
+    public ResponseEntity<List<OutfitDto>> getInfiniteScroll(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(outfitService.getInfiniteScroll(offset, limit));
+    }
+
+
     @Operation(summary = "Удалить образ", description = "Удаляет образ по указанному ID")
     @ApiResponse(responseCode = "204", description = "Образ успешно удален")
     @DeleteMapping("/{id}")

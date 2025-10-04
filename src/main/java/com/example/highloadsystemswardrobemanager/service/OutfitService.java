@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 
 @Service
 public class OutfitService {
@@ -78,6 +81,24 @@ public class OutfitService {
         }
 
         return mapper.toDto(outfitRepository.save(outfit));
+    }
+
+    public PagedResult<OutfitDto> getPaged(int page, int size) {
+        var pageable = PageRequest.of(page, Math.min(size, 50));
+        Page<Outfit> pageData = outfitRepository.findAll(pageable);
+
+        List<OutfitDto> items = pageData.getContent().stream()
+                .map(mapper::toDto)
+                .toList();
+
+        return new PagedResult<>(items, pageData.getTotalElements());
+    }
+
+    public List<OutfitDto> getInfiniteScroll(int offset, int limit) {
+        var pageable = PageRequest.of(offset / limit, limit);
+        return outfitRepository.findAll(pageable)
+                .map(mapper::toDto)
+                .toList();
     }
 
     public void delete(Long id) {

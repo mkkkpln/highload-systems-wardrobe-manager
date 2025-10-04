@@ -7,8 +7,10 @@ import com.example.highloadsystemswardrobemanager.exception.NotFoundException;
 import com.example.highloadsystemswardrobemanager.mapper.WardrobeItemMapper;
 import com.example.highloadsystemswardrobemanager.repository.UserRepository;
 import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,13 +42,6 @@ public class WardrobeItemService {
                 .orElseThrow(() -> new NotFoundException("Item not found: " + id));
     }
 
-    public List<WardrobeItemDto> getPaged(int page, int size) {
-        var pageable = PageRequest.of(page, Math.min(size, 50));
-        return itemRepository.findAll(pageable)
-                .map(mapper::toDto)
-                .toList();
-    }
-
     public WardrobeItemDto create(WardrobeItemDto dto) {
         User owner = userRepository.findById(dto.getOwnerId())
                 .orElseThrow(() -> new NotFoundException("Owner not found: " + dto.getOwnerId()));
@@ -72,5 +67,17 @@ public class WardrobeItemService {
             throw new NotFoundException("Item not found: " + id);
         }
         itemRepository.deleteById(id);
+    }
+
+    public Page<WardrobeItemDto> getPagedWithCount(int page, int size) {
+        Pageable pageable = PageRequest.of(page, Math.min(size, 50));
+        return itemRepository.findAll(pageable).map(mapper::toDto);
+    }
+
+    public List<WardrobeItemDto> getInfiniteScroll(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset / limit, limit);
+        return itemRepository.findAll(pageable)
+                .map(mapper::toDto)
+                .toList();
     }
 }
