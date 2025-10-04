@@ -7,6 +7,7 @@ import com.example.highloadsystemswardrobemanager.exception.NotFoundException;
 import com.example.highloadsystemswardrobemanager.mapper.WardrobeItemMapper;
 import com.example.highloadsystemswardrobemanager.repository.UserRepository;
 import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +38,13 @@ public class WardrobeItemService {
         return itemRepository.findById(id)
                 .map(mapper::toDto)
                 .orElseThrow(() -> new NotFoundException("Item not found: " + id));
+    }
+
+    public List<WardrobeItemDto> getPaged(int page, int size) {
+        var pageable = PageRequest.of(page, Math.min(size, 50));
+        return itemRepository.findAll(pageable)
+                .map(mapper::toDto)
+                .toList();
     }
 
     public WardrobeItemDto create(WardrobeItemDto dto) {

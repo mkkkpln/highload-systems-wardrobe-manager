@@ -58,6 +58,15 @@ public class WardrobeItemController {
         return ResponseEntity.ok(itemService.update(id, dto));
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<List<WardrobeItemDto>> getPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        var items = itemService.getPaged(page, size);
+        return ResponseEntity.ok(items);
+    }
+
+
     @Operation(summary = "Удалить вещь", description = "Удаляет вещь по её ID")
     @ApiResponse(responseCode = "204", description = "Вещь успешно удалена")
     @DeleteMapping("/{id}")
