@@ -94,9 +94,78 @@ src/main/java/com/example/highloadsystemswardrobemanager/
 5. Редактирует и удаляет объекты.
 6. При создании/обновлении Outfit используется транзакция (гарантия согласованности: либо добавятся все вещи, либо не добавится ни одна).
 
-## Тестирование
+## Быстрый старт
 
-### Запуск тестов производительности
+### Через Docker (рекомендуется)
 ```bash
-mvn test 
+docker compose down
+docker compose up --build -d
+docker compose ps
+docker compose logs -f app
 ```
+- Приложение: http://localhost:8080
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
+
+### Переменные окружения
+- DB_URL — JDBC URL PostgreSQL
+- DB_USER
+- DB_PASSWORD
+
+### Пагинация и «лента»
+- Постранично: GET /{resource}/paged?page=0&size=10
+  - Заголовок ответа: X-Total-Count — общее количество записей
+  - size 1..50
+
+- Бесконечная лента: GET /{resource}/scroll?offset=0&limit=10
+  - Без total
+  - limit 1..50 (кап)
+- Для всех findAll использовать /paged или /scroll.
+
+### Примеры запросов
+```bash
+# Пагинация с total
+curl -s -D - "http://localhost:8080/outfits/paged?page=0&size=10" -o /dev/null | grep -i X-Total-Count
+
+# Лента с капом (limit>50 будет урезан до 50)
+curl -s "http://localhost:8080/items/scroll?offset=0&limit=1000"
+
+# Валидация параметров (ожидаем 400)
+curl -i "http://localhost:8080/outfits/0"
+
+# Валидация тела (ожидаем 400)
+curl -i -X POST "http://localhost:8080/outfits" -H "Content-Type: application/json" -d '{}'
+```
+
+### Формат ошибок (GlobalExceptionHandler)
+```bash
+// 400 — невалидные поля DTO
+{
+"error": "VALIDATION_FAILED",
+"details": [
+{ "field": "title", "message": "must not be blank" }
+]
+}
+
+// 400 — ошибка параметров (@Min/@Max/@Pattern)
+{
+"error": "CONSTRAINT_VIOLATION",
+"message": "getById.id: must be greater than or equal to 1"
+}
+
+// 400 — неверный тип параметра
+{ "error": "TYPE_MISMATCH", "message": "Invalid value for parameter 'id'" }
+
+// 404 — не найдено
+{ "error": "NOT_FOUND", "message": "Outfit not found: 123" }
+
+// 409 — конфликт целостности (уникальность и т.п.)
+{ "error": "CONFLICT", "message": "Data integrity violation" }
+
+// 500 — общее
+{ "error": "INTERNAL_ERROR", "message": "Unexpected error" }
+```
+
+### Swagger
+- UI: http://localhost:8080/swagger-ui/index.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+
