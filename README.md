@@ -90,7 +90,7 @@ src/
 
 ## Быстрый старт
 
-### Через Docker (рекомендуется)
+### Через Docker 
 ```bash
 docker compose down
 docker compose up --build -d
