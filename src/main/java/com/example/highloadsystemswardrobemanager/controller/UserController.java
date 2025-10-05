@@ -30,6 +30,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Список пользователей успешно получен")
     })
     @GetMapping
+    @Deprecated
     public ResponseEntity<List<UserDto>> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }

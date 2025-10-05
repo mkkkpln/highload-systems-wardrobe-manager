@@ -27,12 +27,13 @@ public class WardrobeItemController {
         this.itemService = itemService;
     }
 
-    @Operation(summary = "Получить список всех вещей", description = "Возвращает все предметы гардероба пользователя")
-    @ApiResponse(responseCode = "200", description = "Список успешно получен")
-    @GetMapping
-    public ResponseEntity<List<WardrobeItemDto>> getAll() {
-        return ResponseEntity.ok(itemService.getAll());
-    }
+//    @Operation(summary = "Получить список всех вещей", description = "Возвращает все предметы гардероба пользователя")
+//    @ApiResponse(responseCode = "200", description = "Список успешно получен")
+//    @GetMapping
+//    @Deprecated
+//    public ResponseEntity<List<WardrobeItemDto>> getAll() {
+//        return ResponseEntity.ok(itemService.getAll());
+//    }
 
     // пагинация с total count
     @Operation(summary = "Получить вещи с пагинацией", description = "Возвращает список вещей постранично и добавляет X-Total-Count в заголовок ответа")
