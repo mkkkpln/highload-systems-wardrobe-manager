@@ -42,45 +42,39 @@
 ## Структура проекта
 
 ```
-src/main/java/com/example/highloadsystemswardrobemanager/
 
-├── controller/                 # REST-контроллеры
-│   ├── UserController.java
-│   ├── WardrobeItemController.java
-│   └── OutfitController.java
-│
-├── dto/                        # DTO-модели с валидацией
-│   ├── UserDto.java
-│   ├── WardrobeItemDto.java
-│   └── OutfitDto.java
-│
-├── entity/                     # JPA-сущности
-│   ├── User.java
-│   ├── WardrobeItem.java
-│   ├── Outfit.java
-│   └── OutfitItem.java
-│
-├── exception/                  # Обработка ошибок
-│   ├── GlobalExceptionHandler.java
-│   └── NotFoundException.java
-│
-├── mapper/                     # MapStruct-мапперы
-│   ├── UserMapper.java
-│   ├── WardrobeItemMapper.java
-│   └── OutfitMapper.java
-│
-├── repository/                 # Spring Data JPA репозитории
-│   ├── UserRepository.java
-│   ├── WardrobeItemRepository.java
-│   └── OutfitRepository.java
-│
-├── service/                     # Бизнес-логика
-│   ├── UserService.java
-│   ├── WardrobeItemService.java
-│   └── OutfitService.java
-│
-└── HighloadSystemsWardrobeManagerApplication.java  # Точка входа
-
+src/
+ ├─ main/
+ │  ├─ java/com/example/highloadsystemswardrobemanager/
+ │  │  ├─ controller/
+ │  │  │  ├─ OutfitController.java
+ │  │  │  ├─ UserController.java
+ │  │  │  └─ WardrobeItemController.java
+ │  │  ├─ dto/
+ │  │  │  ├─ OutfitDto.java
+ │  │  │  ├─ OutfitItemLinkDto.java
+ │  │  │  ├─ UserDto.java
+ │  │  │  └─ WardrobeItemDto.java
+ │  │  ├─ entity/       # JPA сущности и enum’ы (в БД сериализуются как строки)
+ │  │  ├─ exception/    # NotFoundException, GlobalExceptionHandler
+ │  │  ├─ mapper/       # MapStruct/ручные мапперы DTO↔Entity
+ │  │  ├─ repository/   # Spring Data JPA репозитории
+ │  │  └─ service/
+ │  │     ├─ OutfitService.java       # @Transactional create/update
+ │  │     ├─ UserService.java
+ │  │     └─ WardrobeItemService.java # cap limit ≤ 50, нормализация параметров
+ │  └─ resources/
+ │     ├─ application.yml / application-docker.yml
+ │     └─ db/changelog/** (Liquibase)
+ └─ test/java/com/example/highloadsystemswardrobemanager/
+    ├─ ErrorHandlingOutfitWebMvcTest.java
+    ├─ OutfitControllerTest.java
+    ├─ OutfitIntegrationTest.java
+    ├─ UserControllerTest.java
+    ├─ UserIntegrationTest.java
+    ├─ WardrobeItemControllerTest.java
+    ├─ WardrobeItemIntegrationTest.java
+    └─ WardrobeItemServiceUnitTest.java
 ```
 
 ## Алгоритм работы
