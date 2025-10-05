@@ -128,35 +128,90 @@ curl -i "http://localhost:8080/outfits/0"
 curl -i -X POST "http://localhost:8080/outfits" -H "Content-Type: application/json" -d '{}'
 ```
 
-### Формат ошибок (GlobalExceptionHandler)
-```bash
-// 400 — невалидные поля DTO
-{
-"error": "VALIDATION_FAILED",
-"details": [
-{ "field": "title", "message": "must not be blank" }
-]
-}
-
-// 400 — ошибка параметров (@Min/@Max/@Pattern)
-{
-"error": "CONSTRAINT_VIOLATION",
-"message": "getById.id: must be greater than or equal to 1"
-}
-
-// 400 — неверный тип параметра
-{ "error": "TYPE_MISMATCH", "message": "Invalid value for parameter 'id'" }
-
-// 404 — не найдено
-{ "error": "NOT_FOUND", "message": "Outfit not found: 123" }
-
-// 409 — конфликт целостности (уникальность и т.п.)
-{ "error": "CONFLICT", "message": "Data integrity violation" }
-
-// 500 — общее
-{ "error": "INTERNAL_ERROR", "message": "Unexpected error" }
-```
 
 ### Покрытие тестами
-Минимальный общий процент покрытия кода тестами должен быть 70%. У меня 91%.
-<img width="777" height="653" alt="image" src="https://github.com/user-attachments/assets/c14664bb-ec43-4b0c-8c14-06315e2c7ad2" />
+Минимальный общий процент покрытия кода тестами должен быть 70%. 
+
+<img width="735" height="582" alt="image" src="https://github.com/user-attachments/assets/1c9bbbf2-1819-4493-959e-9a3066999d7b" />
+
+
+### Git-коммиты
+
+Коммиты — Conventional Commits:
+   - feat(api): add paged/scroll endpoints with caps
+   - fix(errors): return structured JSON for 400/404/409/500
+   - test(webmvc,unit): cover pagination and error handling
+   - chore(docker): remove deprecated compose version key
+   - docs(readme): add docker & testing guide
+
+#### (1) «Каждый findAll должен иметь пагинацию. Нельзя отдавать больше 50 записей за запрос»
+
+Outfits
+
+- Контроллер: [OutfitController](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/controller/OutfitController.java)#getPaged (GET /outfits/paged)
+- Сервис: [OutfitService](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/service/OutfitService.java)#getPaged(int page, int size). Внутри идёт нормализация параметров:
+size капится до ≤ 50 (capTo50(size)), page не меньше нуля (atLeastZero(page)), затем PageRequest.of(...).
+- Тесты: OutfitControllerTest#shouldReturnPagedOutfits, OutfitControllerTest#paged_genericException_returns500.
+
+Wardrobe items
+
+- Контроллер: [WardrobeItemController](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/controller/WardrobeItemController.java)#getPagedWithCount (GET /items/paged)
+- Сервис: [WardrobeItemService](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/service/WardrobeItemService.java)#getPagedWithCount(int page, int size). Также нормализация: page >= 0, size ≤ 50 → PageRequest.of(...).
+- Тесты:
+   - WardrobeItemControllerTest#getPagedItems (проверяет заголовок и ответ).
+   - WardrobeItemServiceUnitTest#getPagedWithCount_sanitizesParams_andMaps (проверяет, что в репозиторий реально уходит Pageable c size=50, page=0 при входных -3 и 1000).
+
+
+#### (2) «Минимум один запрос с бесконечной прокруткой (без total)»
+
+Outfits (лента)
+- Контроллер: [OutfitController](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/controller/OutfitController.java)#getInfiniteScroll (GET /outfits/scroll?offset&limit). В контроллере стоят валидации (@Min(0) для offset, @Min(1) @Max(50) для limit).
+- Сервис: [OutfitService](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/service/OutfitService.java)#getInfiniteScroll(int offset, int limit). Делает: limit = capTo50(limit), offset = atLeastZero(offset), считает pageIndex = offset / limit, затем PageRequest.of(pageIndex, limit).
+- Тесты:
+   - OutfitControllerTest#shouldReturnInfiniteScrollChunk и #scrollShouldRejectTooLargeLimit (limit > 50 → 400).
+
+Wardrobe items (лента)
+- Контроллер: [WardrobeItemController](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/controller/WardrobeItemController.java)#getInfiniteScroll (GET /items/scroll?offset&limit)
+- Сервис: [WardrobeItemService](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/service/WardrobeItemService.java)#getInfiniteScroll(int offset, int limit). Тот же подход: capTo50(limit) + pageIndex = offset / limit.
+- Тесты:
+   - WardrobeItemControllerTest#getInfiniteScroll (успешный кейс).
+   - WardrobeItemServiceUnitTest#getInfiniteScroll_capsLimit_andComputesPageIndex и #getInfiniteScroll_limitLessThanOne_becomesOne — проверяет кап лимита и корректный расчёт pageIndex.
+
+#### (3) «Минимум один запрос с пагинацией и общим количеством в HTTP-заголовке»
+
+Outfits
+- Контроллер: [OutfitController](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/controller/OutfitController.java)#getPaged (GET /outfits/paged). В ответе заголовок X-Total-Count берётся из PagedResult.totalCount().
+- Сервис: [OutfitService](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/service/OutfitService.java)#getPaged возвращает new PagedResult<>(items, pageData.getTotalElements()).
+- Тест: OutfitControllerTest#shouldReturnPagedOutfits → проверяет X-Total-Count.
+
+Wardrobe items
+
+- Контроллер: [WardrobeItemController](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/controller/WardrobeItemController.java)#getPagedWithCount (GET /items/paged). Заголовок X-Total-Count = page.getTotalElements().
+- Сервис: [WardrobeItemService](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/service/WardrobeItemService.java)#getPagedWithCount.
+- Тест: WardrobeItemControllerTest#getPagedItems → проверяет заголовок.
+
+#### (4) «На сложных запросах должны использоваться транзакции (≥2). »
+
+**Transactional #1**: создание образа (Метод: [OutfitService](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/service/OutfitService.java)#create(OutfitDto dto) @Transactional)
+
+- Загружает User по dto.userId (возможен NotFoundException).
+- Создаёт Outfit и связывает с пользователем.
+- Для каждого [OutfitItemLinkDto](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/dto/OutfitItemLinkDto.java):
+   - загружает WardrobeItem по itemId (тоже может бросать NotFoundException);
+   - добавляет в связку outfit.addItem(item, role, index).
+- Сохраняет Outfit вместе с join-записями.
+
+**Почему нужна транзакция**: это единая бизнес-операция. В ней несколько шагов и несколько таблиц (главная + таблица связей). Если на середине произойдёт ошибка (любая из проверок не прошла, БД отказала по констрейнту и т.п.), всё откатывается, и в БД не останется «полусозданного» образа без связей или с их частью. Это и есть требуемая атомарность.
+
+**Transactional #2**: обновление образа (Метод: [OutfitService](https://github.com/mkkkpln/highload-systems-wardrobe-manager/blob/main/src/main/java/com/example/highloadsystemswardrobemanager/service/OutfitService.java)#update(Long id, OutfitDto dto) @Transactional)
+
+- Загружает Outfit по id (NotFoundException если нет).
+- Обновляет заголовочные поля (title и т.п.).
+- outfit.clearItems() — очищает все предыдущие связи (join-entity).
+- Повторно добавляет связи addItem(...) с новой ролью/порядком.
+- Сохраняет.
+
+**Почему нужна транзакция**: здесь есть фаза «снять все связи» → «поставить новые». Если в процессе что-то пойдёт не так (например, один из новых itemId не существует), без транзакции мы останемся в битом состоянии: заголовок обновлён, старые связи удалены, новые не добавились. Транзакция гарантирует: либо всё новое состояние успешно записано, либо откат к прежнему (последовательноcть изменений атомарна).
+
+
+
