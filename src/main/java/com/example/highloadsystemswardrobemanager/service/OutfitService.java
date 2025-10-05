@@ -35,9 +35,9 @@ public class OutfitService {
         this.mapper = mapper;
     }
 
-    public List<OutfitDto> getAll() {
-        return outfitRepository.findAll().stream().map(mapper::toDto).toList();
-    }
+//    public List<OutfitDto> getAll() {
+//        return outfitRepository.findAll().stream().map(mapper::toDto).toList();
+//    }
 
     public OutfitDto getByIdOr404(Long id) {
         return outfitRepository.findById(id).map(mapper::toDto)

@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/outfits")
-@Validated 
+@Validated
 public class OutfitController {
 
     private final OutfitService outfitService;
@@ -26,12 +26,13 @@ public class OutfitController {
         this.outfitService = outfitService;
     }
 
-    @Operation(summary = "Получить список всех образов", description = "Возвращает все образы, созданные пользователями")
-    @ApiResponse(responseCode = "200", description = "Список успешно получен")
-    @GetMapping
-    public ResponseEntity<List<OutfitDto>> getAll() {
-        return ResponseEntity.ok(outfitService.getAll());
-    }
+//    @Operation(summary = "Получить список всех образов", description = "Возвращает все образы, созданные пользователями")
+//    @ApiResponse(responseCode = "200", description = "Список успешно получен")
+//    @GetMapping
+//    @Deprecated
+//    public ResponseEntity<List<OutfitDto>> getAll() {
+//        return ResponseEntity.ok(outfitService.getAll());
+//    }
 
     @Operation(summary = "Получить образ по ID", description = "Возвращает образ с указанным идентификатором")
     @ApiResponses({

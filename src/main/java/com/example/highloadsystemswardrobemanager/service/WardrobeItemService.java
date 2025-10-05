@@ -29,12 +29,12 @@ public class WardrobeItemService {
         this.mapper = mapper;
     }
 
-    public List<WardrobeItemDto> getAll() {
-        return itemRepository.findAll()
-                .stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
-    }
+//    public List<WardrobeItemDto> getAll() {
+//        return itemRepository.findAll()
+//                .stream()
+//                .map(mapper::toDto)
+//                .collect(Collectors.toList());
+//    }
 
     public WardrobeItemDto getByIdOr404(Long id) {
         return itemRepository.findById(id)
