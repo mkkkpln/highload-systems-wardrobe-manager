@@ -1,4 +1,4 @@
-# Wardrobe Manager — пояснение к лабораторной работе
+# Wardrobe Manager 
 
 ## Предметная область
 
