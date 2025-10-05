@@ -5,14 +5,19 @@ import com.example.highloadsystemswardrobemanager.service.OutfitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/outfits")
+@Validated 
 public class OutfitController {
 
     private final OutfitService outfitService;
@@ -34,7 +39,7 @@ public class OutfitController {
             @ApiResponse(responseCode = "404", description = "Образ не найден")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<OutfitDto> getById(@PathVariable Long id) {
+    public ResponseEntity<OutfitDto> getById(@PathVariable @Min(1) Long id) { // <-- ID >= 1
         return ResponseEntity.ok(outfitService.getByIdOr404(id));
     }
 
@@ -44,7 +49,7 @@ public class OutfitController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации данных")
     })
     @PostMapping
-    public ResponseEntity<OutfitDto> create(@RequestBody OutfitDto dto) {
+    public ResponseEntity<OutfitDto> create(@Valid @RequestBody OutfitDto dto) { // <-- @Valid
         return ResponseEntity.status(HttpStatus.CREATED).body(outfitService.create(dto));
     }
 
@@ -54,7 +59,8 @@ public class OutfitController {
             @ApiResponse(responseCode = "404", description = "Образ не найден")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<OutfitDto> update(@PathVariable Long id, @RequestBody OutfitDto dto) {
+    public ResponseEntity<OutfitDto> update(@PathVariable @Min(1) Long id, // <-- ID >= 1
+                                            @Valid @RequestBody OutfitDto dto) { // <-- @Valid
         return ResponseEntity.ok(outfitService.update(id, dto));
     }
 
@@ -65,8 +71,8 @@ public class OutfitController {
     })
     @GetMapping("/paged")
     public ResponseEntity<List<OutfitDto>> getPaged(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,      // <-- page >= 0
+            @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) { // <-- 1..50
         var result = outfitService.getPaged(page, size);
         return ResponseEntity
                 .ok()
@@ -78,16 +84,15 @@ public class OutfitController {
             description = "Возвращает часть списка образов без указания общего количества записей (для 'ленты').")
     @GetMapping("/scroll")
     public ResponseEntity<List<OutfitDto>> getInfiniteScroll(
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(defaultValue = "0") @Min(0) int offset,    // <-- offset >= 0
+            @RequestParam(defaultValue = "10") @Min(1) @Max(50) int limit) { // <-- 1..50
         return ResponseEntity.ok(outfitService.getInfiniteScroll(offset, limit));
     }
-
 
     @Operation(summary = "Удалить образ", description = "Удаляет образ по указанному ID")
     @ApiResponse(responseCode = "204", description = "Образ успешно удален")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @Min(1) Long id) { // <-- ID >= 1
         outfitService.delete(id);
         return ResponseEntity.noContent().build();
     }

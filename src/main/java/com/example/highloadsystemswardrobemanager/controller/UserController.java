@@ -2,18 +2,21 @@ package com.example.highloadsystemswardrobemanager.controller;
 
 import com.example.highloadsystemswardrobemanager.dto.UserDto;
 import com.example.highloadsystemswardrobemanager.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -41,7 +44,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Некорректный ID")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable Long id) {
+    public ResponseEntity<UserDto> getById(@PathVariable @Min(1) Long id) { // <-- ID >= 1
         return ResponseEntity.ok(userService.getByIdOr404(id));
     }
 
@@ -54,19 +57,20 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные в теле запроса")
     })
     @PostMapping
-    public ResponseEntity<UserDto> create(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto) { // <-- @Valid
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(userDto));
     }
 
     @Operation(summary = "Обновить данные пользователя", description = "Изменяет данные пользователя по ID")
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> update(@PathVariable @Min(1) Long id, // <-- ID >= 1
+                                          @Valid @RequestBody UserDto userDto) { // <-- @Valid
         return ResponseEntity.ok(userService.update(id, userDto));
     }
 
     @Operation(summary = "Удалить пользователя", description = "Удаляет пользователя по ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @Min(1) Long id) { // <-- ID >= 1
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }
