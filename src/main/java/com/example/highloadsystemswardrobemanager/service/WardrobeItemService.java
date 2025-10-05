@@ -7,10 +7,10 @@ import com.example.highloadsystemswardrobemanager.exception.NotFoundException;
 import com.example.highloadsystemswardrobemanager.mapper.WardrobeItemMapper;
 import com.example.highloadsystemswardrobemanager.repository.UserRepository;
 import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,14 +70,26 @@ public class WardrobeItemService {
     }
 
     public Page<WardrobeItemDto> getPagedWithCount(int page, int size) {
-        Pageable pageable = PageRequest.of(page, Math.min(size, 50));
+        int safePage = atLeastZero(page);
+        int safeSize = capTo50(size);
+        Pageable pageable = PageRequest.of(safePage, safeSize);
         return itemRepository.findAll(pageable).map(mapper::toDto);
     }
 
     public List<WardrobeItemDto> getInfiniteScroll(int offset, int limit) {
-        Pageable pageable = PageRequest.of(offset / limit, limit);
-        return itemRepository.findAll(pageable)
+        int safeOffset = atLeastZero(offset);
+        int safeLimit  = capTo50(limit);            // ≤ 50
+        int pageIndex  = safeOffset / safeLimit;    // приближённая интерпретация offset→page
+        return itemRepository.findAll(PageRequest.of(pageIndex, safeLimit))
                 .map(mapper::toDto)
                 .toList();
+    }
+
+    // ---------- local helpers ----------
+    private static int atLeastZero(int v) { return Math.max(v, 0); }
+
+    private static int capTo50(int v) {
+        if (v < 1) return 1;
+        return Math.min(v, 50);
     }
 }

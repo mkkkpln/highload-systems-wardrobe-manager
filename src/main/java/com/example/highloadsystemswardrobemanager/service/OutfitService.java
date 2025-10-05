@@ -2,19 +2,20 @@ package com.example.highloadsystemswardrobemanager.service;
 
 import com.example.highloadsystemswardrobemanager.dto.OutfitDto;
 import com.example.highloadsystemswardrobemanager.dto.OutfitItemLinkDto;
-import com.example.highloadsystemswardrobemanager.entity.*;
+import com.example.highloadsystemswardrobemanager.entity.Outfit;
+import com.example.highloadsystemswardrobemanager.entity.User;
+import com.example.highloadsystemswardrobemanager.entity.WardrobeItem;
 import com.example.highloadsystemswardrobemanager.exception.NotFoundException;
 import com.example.highloadsystemswardrobemanager.mapper.OutfitMapper;
 import com.example.highloadsystemswardrobemanager.repository.OutfitRepository;
 import com.example.highloadsystemswardrobemanager.repository.UserRepository;
 import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
 
 @Service
 public class OutfitService {
@@ -84,8 +85,9 @@ public class OutfitService {
     }
 
     public PagedResult<OutfitDto> getPaged(int page, int size) {
-        var pageable = PageRequest.of(page, Math.min(size, 50));
-        Page<Outfit> pageData = outfitRepository.findAll(pageable);
+        int safePage = atLeastZero(page);
+        int safeSize = capTo50(size);
+        Page<Outfit> pageData = outfitRepository.findAll(PageRequest.of(safePage, safeSize));
 
         List<OutfitDto> items = pageData.getContent().stream()
                 .map(mapper::toDto)
@@ -95,13 +97,23 @@ public class OutfitService {
     }
 
     public List<OutfitDto> getInfiniteScroll(int offset, int limit) {
-        var pageable = PageRequest.of(offset / limit, limit);
-        return outfitRepository.findAll(pageable)
+        int safeOffset = atLeastZero(offset);
+        int safeLimit  = capTo50(limit);              // ≤ 50
+        int pageIndex  = safeOffset / safeLimit;      // приближённая интерпретация offset→page
+        return outfitRepository.findAll(PageRequest.of(pageIndex, safeLimit))
                 .map(mapper::toDto)
                 .toList();
     }
 
     public void delete(Long id) {
         outfitRepository.deleteById(id);
+    }
+
+    // ---------- local helpers ----------
+    private static int atLeastZero(int v) { return Math.max(v, 0); }
+
+    private static int capTo50(int v) {
+        if (v < 1) return 1;
+        return Math.min(v, 50);
     }
 }
