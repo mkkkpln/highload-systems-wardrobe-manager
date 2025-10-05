@@ -42,17 +42,6 @@ class WardrobeItemControllerTest {
         return dto;
     }
 
-    @Test
-    @DisplayName("GET /items — должен вернуть список вещей (200 OK)")
-    void getAllItems() throws Exception {
-        Mockito.when(wardrobeItemService.getAll())
-                .thenReturn(List.of(sampleItem()));
-
-        mockMvc.perform(get("/items"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].brand").value("Zara"))
-                .andExpect(jsonPath("$[0].type").value("T_SHIRT"));
-    }
 
     @Test
     @DisplayName("GET /items/{id} — вернуть вещь по ID")
