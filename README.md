@@ -104,12 +104,10 @@ docker compose ps
 docker compose logs -f app
 ```
 - Приложение: http://localhost:8080
-- Swagger UI: http://localhost:8080/swagger-ui/index.html
 
-### Переменные окружения
-- DB_URL — JDBC URL PostgreSQL
-- DB_USER
-- DB_PASSWORD
+### Swagger
+- UI: http://localhost:8080/swagger-ui/index.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
 
 ### Пагинация и «лента»
 - Постранично: GET /{resource}/paged?page=0&size=10
@@ -165,7 +163,6 @@ curl -i -X POST "http://localhost:8080/outfits" -H "Content-Type: application/js
 { "error": "INTERNAL_ERROR", "message": "Unexpected error" }
 ```
 
-### Swagger
-- UI: http://localhost:8080/swagger-ui/index.html
-- OpenAPI JSON: http://localhost:8080/v3/api-docs
-
+### Покрытие тестами
+Минимальный общий процент покрытия кода тестами должен быть 70%. У меня 91%.
+<img width="777" height="653" alt="image" src="https://github.com/user-attachments/assets/c14664bb-ec43-4b0c-8c14-06315e2c7ad2" />
