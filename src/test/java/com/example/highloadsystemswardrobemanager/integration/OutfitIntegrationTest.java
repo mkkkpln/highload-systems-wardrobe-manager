@@ -134,6 +134,6 @@ class OutfitIntegrationTest extends BaseIntegrationTest {
         outfitService.delete(id);
 
         // Проверить, что не существует
-        assertThrows(Exception.class, () -> outfitService.getByIdOr404(id));
+        assertThrows(Exception.class, () -> outfitService.getById(id));
     }
 }

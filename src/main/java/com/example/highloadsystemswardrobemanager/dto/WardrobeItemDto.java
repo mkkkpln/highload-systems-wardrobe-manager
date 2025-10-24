@@ -2,47 +2,30 @@ package com.example.highloadsystemswardrobemanager.dto;
 
 import com.example.highloadsystemswardrobemanager.entity.enums.ItemType;
 import com.example.highloadsystemswardrobemanager.entity.enums.Season;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class WardrobeItemDto {
-    private Long id;
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public record WardrobeItemDto(
+        Long id,
 
-    @NotNull
-    private ItemType type;
+        @NotNull
+        ItemType type,
 
-    private String brand;
-    private String color;
+        String brand,
+        String color,
 
-    @NotNull
-    private Season season;
+        @NotNull
+        Season season,
 
-    @NotBlank
-    @Size(max = 500)
-    private String imageUrl;
+        @NotBlank
+        @Size(max = 500)
+        String imageUrl,
 
-    @NotNull
-    private Long ownerId;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public ItemType getType() { return type; }
-    public void setType(ItemType type) { this.type = type; }
-
-    public String getBrand() { return brand; }
-    public void setBrand(String brand) { this.brand = brand; }
-
-    public String getColor() { return color; }
-    public void setColor(String color) { this.color = color; }
-
-    public Season getSeason() { return season; }
-    public void setSeason(Season season) { this.season = season; }
-
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-
-    public Long getOwnerId() { return ownerId; }
-    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
+        @NotNull
+        Long ownerId
+) {
 }

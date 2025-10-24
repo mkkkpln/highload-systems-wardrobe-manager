@@ -21,11 +21,11 @@ public interface OutfitMapper {
     Outfit toEntity(OutfitDto dto);
 
     default List<OutfitItemLinkDto> toLinks(Outfit outfit) {
-        return outfit.getOutfitItems().stream().map(oi -> {
-            OutfitItemLinkDto d = new OutfitItemLinkDto();
-            d.setItemId(oi.getItem().getId());
-            d.setRole(oi.getRole());
-            return d;
-        }).toList();
+        return outfit.getOutfitItems().stream()
+                .map(oi -> new OutfitItemLinkDto(
+                        oi.getItem().getId(),
+                        oi.getRole()
+                ))
+                .toList();
     }
 }

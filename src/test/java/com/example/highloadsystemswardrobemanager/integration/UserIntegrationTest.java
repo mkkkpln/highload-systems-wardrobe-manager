@@ -33,7 +33,7 @@ class UserIntegrationTest extends BaseIntegrationTest {
         UserDto created = userService.create(dto);
         assertNotNull(created.getId());
 
-        UserDto found = userService.getByIdOr404(created.getId());
+        UserDto found = userService.getById(created.getId());
         assertEquals("IntegrationUser", found.getName());
     }
 }

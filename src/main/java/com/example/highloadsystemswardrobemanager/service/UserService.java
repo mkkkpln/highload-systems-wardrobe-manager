@@ -5,19 +5,16 @@ import com.example.highloadsystemswardrobemanager.mapper.UserMapper;
 import com.example.highloadsystemswardrobemanager.repository.UserRepository;
 import com.example.highloadsystemswardrobemanager.dto.UserDto;
 import com.example.highloadsystemswardrobemanager.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
 
     public List<UserDto> getAll() {
         return userRepository.findAll()
@@ -26,9 +23,17 @@ public class UserService {
                 .toList();
     }
 
-    public UserDto getByIdOr404(Long id) {
+    public UserDto getById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toDto)
+                .orElseThrow(() -> new NotFoundException("User not found: " + id));
+    }
+
+    /**
+     * Метод для получения User entity (для использования другими сервисами)
+     */
+    public User getEntityById(Long id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found: " + id));
     }
 
