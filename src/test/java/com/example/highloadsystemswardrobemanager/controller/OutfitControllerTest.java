@@ -43,7 +43,7 @@ class OutfitControllerTest {
 
         mockMvc.perform(post("/outfits")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\":\"Autumn Look\",\"userId\":14}"))
+                        .content("{\"title\":\"Autumn Look\",\"user_id\":14}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.title").value("Autumn Look"));

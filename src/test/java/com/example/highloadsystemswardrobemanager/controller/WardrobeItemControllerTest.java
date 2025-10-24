@@ -68,8 +68,8 @@ class WardrobeItemControllerTest {
                                   "brand": "Zara",
                                   "color": "White",
                                   "season": "SUMMER",
-                                  "imageUrl": "https://example.com/image.jpg",
-                                  "ownerId": 10
+                                  "image_url": "https://example.com/image.jpg",
+                                  "owner_id": 10
                                 }
                                 """))
                 .andExpect(status().isCreated())
@@ -90,8 +90,8 @@ class WardrobeItemControllerTest {
                                   "brand": "Uniqlo",
                                   "color": "Beige",
                                   "season": "SUMMER",
-                                  "imageUrl": "https://example.com/beige.jpg",
-                                  "ownerId": 10
+                                  "image_url": "https://example.com/beige.jpg",
+                                  "owner_id": 10
                                 }
                                 """))
                 .andExpect(status().isOk())
@@ -126,6 +126,6 @@ class WardrobeItemControllerTest {
 
         mockMvc.perform(get("/items/scroll?offset=0&limit=5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].ownerId").value(10));
+                .andExpect(jsonPath("$[0].owner_id").value(10));
     }
 }

@@ -28,5 +28,20 @@ services:
     ports:
       - "8080:8080"
 
+  # ---------- Тесты ----------
+  tests:
+    build:
+      context: .
+      target: tester
+    container_name: wardrobe-tests
+    depends_on:
+      - db
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/wardrobe
+      DB_USER: wardrobe
+      DB_PASSWORD: wardrobe
+    volumes:
+      - ./target:/app/target
+
 volumes:
   postgres_data:
