@@ -1,4 +1,4 @@
-package com.example.highloadsystemswardrobemanager;
+package com.example.highloadsystemswardrobemanager.service;
 
 import com.example.highloadsystemswardrobemanager.dto.WardrobeItemDto;
 import com.example.highloadsystemswardrobemanager.entity.WardrobeItem;

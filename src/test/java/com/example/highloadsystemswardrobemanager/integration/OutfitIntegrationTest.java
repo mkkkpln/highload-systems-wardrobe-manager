@@ -1,4 +1,4 @@
-package com.example.highloadsystemswardrobemanager;
+package com.example.highloadsystemswardrobemanager.integration;
 
 import com.example.highloadsystemswardrobemanager.dto.OutfitDto;
 import com.example.highloadsystemswardrobemanager.dto.OutfitItemLinkDto;
