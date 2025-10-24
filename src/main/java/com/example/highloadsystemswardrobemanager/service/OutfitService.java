@@ -8,8 +8,7 @@ import com.example.highloadsystemswardrobemanager.entity.WardrobeItem;
 import com.example.highloadsystemswardrobemanager.exception.NotFoundException;
 import com.example.highloadsystemswardrobemanager.mapper.OutfitMapper;
 import com.example.highloadsystemswardrobemanager.repository.OutfitRepository;
-import com.example.highloadsystemswardrobemanager.repository.UserRepository;
-import com.example.highloadsystemswardrobemanager.repository.WardrobeItemRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -18,36 +17,26 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OutfitService {
 
     private final OutfitRepository outfitRepository;
-    private final UserRepository userRepository;
-    private final WardrobeItemRepository itemRepository;
+    private final UserService userService;
+    private final WardrobeItemService wardrobeItemService;
     private final OutfitMapper mapper;
-
-    public OutfitService(OutfitRepository outfitRepository,
-                         UserRepository userRepository,
-                         WardrobeItemRepository itemRepository,
-                         OutfitMapper mapper) {
-        this.outfitRepository = outfitRepository;
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
-        this.mapper = mapper;
-    }
 
 //    public List<OutfitDto> getAll() {
 //        return outfitRepository.findAll().stream().map(mapper::toDto).toList();
 //    }
 
-    public OutfitDto getByIdOr404(Long id) {
+    public OutfitDto getById(Long id) {
         return outfitRepository.findById(id).map(mapper::toDto)
                 .orElseThrow(() -> new NotFoundException("Outfit not found: " + id));
     }
 
     @Transactional
     public OutfitDto create(OutfitDto dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new NotFoundException("User not found: " + dto.getUserId()));
+        User user = userService.getEntityById(dto.getUserId());
 
         Outfit outfit = mapper.toEntity(dto);
         outfit.setUser(user);
@@ -55,8 +44,7 @@ public class OutfitService {
         if (dto.getItems() != null) {
             int idx = 0;
             for (OutfitItemLinkDto link : dto.getItems()) {
-                WardrobeItem item = itemRepository.findById(link.getItemId())
-                        .orElseThrow(() -> new NotFoundException("Item not found: " + link.getItemId()));
+                WardrobeItem item = wardrobeItemService.getEntityById(link.getItemId());
                 outfit.addItem(item, link.getRole(), idx++);
             }
         }
@@ -75,8 +63,7 @@ public class OutfitService {
         if (dto.getItems() != null) {
             int idx = 0;
             for (OutfitItemLinkDto link : dto.getItems()) {
-                WardrobeItem item = itemRepository.findById(link.getItemId())
-                        .orElseThrow(() -> new NotFoundException("Item not found: " + link.getItemId()));
+                WardrobeItem item = wardrobeItemService.getEntityById(link.getItemId());
                 outfit.addItem(item, link.getRole(), idx++);
             }
         }
@@ -84,7 +71,7 @@ public class OutfitService {
         return mapper.toDto(outfitRepository.save(outfit));
     }
 
-    public PagedResult<OutfitDto> getPaged(int page, int size) {
+    public PagedResult<OutfitDto> getOutfitsUpTo50(int page, int size) {
         int safePage = atLeastZero(page);
         int safeSize = capTo50(size);
         Page<Outfit> pageData = outfitRepository.findAll(PageRequest.of(safePage, safeSize));
