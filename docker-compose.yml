@@ -40,8 +40,17 @@ services:
       DB_URL: jdbc:postgresql://db:5432/wardrobe
       DB_USER: wardrobe
       DB_PASSWORD: wardrobe
+      # Testcontainers configuration for Docker-in-Docker
+      DOCKER_HOST: unix:///var/run/docker.sock
+      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+      TESTCONTAINERS_RYUK_DISABLED: "false"
+      # Для macOS Docker Desktop
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
     volumes:
       - ./target:/app/target
+      - /var/run/docker.sock:/var/run/docker.sock  # Доступ к Docker daemon
+    # Необходимо для Docker-in-Docker на некоторых системах
+    privileged: true
 
 volumes:
   postgres_data:
