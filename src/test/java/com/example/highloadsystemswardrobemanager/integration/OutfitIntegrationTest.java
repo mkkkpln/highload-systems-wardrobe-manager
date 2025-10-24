@@ -50,40 +50,35 @@ class OutfitIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldCreateOutfitWithItemsSuccessfully() {
         // 1. Создать тестового пользователя
-        UserDto user = new UserDto();
-        user.setEmail("integration_user@example.com");
-        user.setName("Integration User");
+        UserDto user = new UserDto(null, "integration_user@example.com", "Integration User");
         UserDto savedUser = userService.create(user);
-        assertNotNull(savedUser.getId());
+        assertNotNull(savedUser.id());
 
         // 2. Создать тестовую вещь
-        WardrobeItemDto item = new WardrobeItemDto();
-        item.setType(ItemType.T_SHIRT);
-        item.setBrand("Zara");
-        item.setColor("White");
-        item.setSeason(Season.SUMMER);
-        item.setImageUrl("https://example.com/tshirt.jpg");
-        item.setOwnerId(savedUser.getId());
+        WardrobeItemDto item = new WardrobeItemDto(
+                null,
+                ItemType.T_SHIRT,
+                "Zara",
+                "White",
+                Season.SUMMER,
+                "https://example.com/tshirt.jpg",
+                savedUser.id()
+        );
         WardrobeItemDto savedItem = wardrobeItemService.create(item);
-        assertNotNull(savedItem.getId());
+        assertNotNull(savedItem.id());
 
         // 3. Создать тестовый образ с этой вещью
-        OutfitItemLinkDto link = new OutfitItemLinkDto();
-        link.setItemId(savedItem.getId());
-        link.setRole(OutfitRole.TOP);
+        OutfitItemLinkDto link = new OutfitItemLinkDto(savedItem.id(), OutfitRole.TOP);
 
-        OutfitDto outfit = new OutfitDto();
-        outfit.setTitle("Summer Look");
-        outfit.setUserId(savedUser.getId());
-        outfit.setItems(List.of(link));
+        OutfitDto outfit = new OutfitDto(null, "Summer Look", savedUser.id(), List.of(link));
 
         OutfitDto created = outfitService.create(outfit);
 
         // 4. Проверить, что всё сохранилось
-        assertNotNull(created.getId());
-        assertEquals("Summer Look", created.getTitle());
-        assertEquals(savedUser.getId(), created.getUserId());
-        assertEquals(1, created.getItems().size());
+        assertNotNull(created.id());
+        assertEquals("Summer Look", created.title());
+        assertEquals(savedUser.id(), created.userId());
+        assertEquals(1, created.items().size());
     }
 
     /**
@@ -92,23 +87,19 @@ class OutfitIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldUpdateOutfitTitle() {
         // Создать пользователя
-        UserDto user = new UserDto();
-        user.setEmail("update_user@example.com");
-        user.setName("Update Tester");
+        UserDto user = new UserDto(null, "update_user@example.com", "Update Tester");
         UserDto savedUser = userService.create(user);
 
         // Создать пустой образ
-        OutfitDto outfit = new OutfitDto();
-        outfit.setTitle("Old Title");
-        outfit.setUserId(savedUser.getId());
+        OutfitDto outfit = new OutfitDto(null, "Old Title", savedUser.id(), null);
         OutfitDto created = outfitService.create(outfit);
 
         // Обновить название
-        created.setTitle("New Title");
-        OutfitDto updated = outfitService.update(created.getId(), created);
+        OutfitDto updatedOutfit = new OutfitDto(created.id(), "New Title", created.userId(), created.items());
+        OutfitDto updated = outfitService.update(created.id(), updatedOutfit);
 
         // Проверка
-        assertEquals("New Title", updated.getTitle());
+        assertEquals("New Title", updated.title());
     }
 
     /**
@@ -117,17 +108,13 @@ class OutfitIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldDeleteOutfit() {
         // Создать пользователя
-        UserDto user = new UserDto();
-        user.setEmail("delete_user@example.com");
-        user.setName("Delete Tester");
+        UserDto user = new UserDto(null, "delete_user@example.com", "Delete Tester");
         UserDto savedUser = userService.create(user);
 
         // Создать образ
-        OutfitDto outfit = new OutfitDto();
-        outfit.setTitle("To Delete");
-        outfit.setUserId(savedUser.getId());
+        OutfitDto outfit = new OutfitDto(null, "To Delete", savedUser.id(), null);
         OutfitDto created = outfitService.create(outfit);
-        Long id = created.getId();
+        Long id = created.id();
         assertNotNull(id);
 
         // Удалить

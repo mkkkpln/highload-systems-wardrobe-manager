@@ -34,7 +34,9 @@ class WardrobeItemServiceUnitTest {
     void getPagedWithCount_sanitizesParams_andMaps() {
         when(itemRepository.findAll(any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(new WardrobeItem())));
-        when(mapper.toDto(any(WardrobeItem.class))).thenReturn(new WardrobeItemDto());
+        when(mapper.toDto(any(WardrobeItem.class))).thenReturn(
+                new WardrobeItemDto(null, null, null, null, null, null, null)
+        );
 
         // page < 0 -> 0; size > 50 -> 50
         service.getItemsUpTo50(-3, 1000);
@@ -51,7 +53,9 @@ class WardrobeItemServiceUnitTest {
     void getInfiniteScroll_capsLimit_andComputesPageIndex() {
         when(itemRepository.findAll(any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(new WardrobeItem())));
-        when(mapper.toDto(any(WardrobeItem.class))).thenReturn(new WardrobeItemDto());
+        when(mapper.toDto(any(WardrobeItem.class))).thenReturn(
+                new WardrobeItemDto(null, null, null, null, null, null, null)
+        );
 
         // offset=120, limit=1000 -> limit=50, pageIndex=120/50=2
         service.getInfiniteScroll(120, 1000);

@@ -34,10 +34,7 @@ class UserControllerTest {
 
     @Test
     void shouldReturnListOfUsers() throws Exception {
-        var dto = new UserDto();
-        dto.setId(1L);
-        dto.setName("Alice");
-        dto.setEmail("alice@example.com");
+        var dto = new UserDto(1L, "alice@example.com", "Alice");
 
         Mockito.when(userService.getAll()).thenReturn(List.of(dto));
 
@@ -50,10 +47,7 @@ class UserControllerTest {
 
     @Test
     void shouldCreateUser() throws Exception {
-        var dto = new UserDto();
-        dto.setId(2L);
-        dto.setName("Bob");
-        dto.setEmail("bob@example.com");
+        var dto = new UserDto(2L, "bob@example.com", "Bob");
 
         Mockito.when(userService.create(any(UserDto.class))).thenReturn(dto);
 

@@ -37,10 +37,7 @@ class OutfitControllerTest {
     // --- CREATE ---
     @Test
     void shouldCreateOutfit() throws Exception {
-        var dto = new OutfitDto();
-        dto.setId(2L);
-        dto.setTitle("Autumn Look");
-        dto.setUserId(14L);
+        var dto = new OutfitDto(2L, "Autumn Look", 14L, null);
 
         when(outfitService.create(any(OutfitDto.class))).thenReturn(dto);
 
@@ -55,10 +52,7 @@ class OutfitControllerTest {
     // --- PAGED ---
     @Test
     void shouldReturnPagedOutfits() throws Exception {
-        var dto = new OutfitDto();
-        dto.setId(1L);
-        dto.setTitle("Paged Outfit");
-        dto.setUserId(1L);
+        var dto = new OutfitDto(1L, "Paged Outfit", 1L, null);
 
         var result = new PagedResult<>(List.of(dto), 5L);
         when(outfitService.getOutfitsUpTo50(0, 5)).thenReturn(result);
@@ -72,8 +66,8 @@ class OutfitControllerTest {
     // --- SCROLL (ok) ---
     @Test
     void shouldReturnInfiniteScrollChunk() throws Exception {
-        var dto1 = new OutfitDto(); dto1.setId(1L); dto1.setTitle("Look #1"); dto1.setUserId(10L);
-        var dto2 = new OutfitDto(); dto2.setId(2L); dto2.setTitle("Look #2"); dto2.setUserId(10L);
+        var dto1 = new OutfitDto(1L, "Look #1", 10L, null);
+        var dto2 = new OutfitDto(2L, "Look #2", 10L, null);
 
         when(outfitService.getInfiniteScroll(0, 10)).thenReturn(List.of(dto1, dto2));
 

@@ -34,27 +34,27 @@ class WardrobeItemIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldCreateItemSuccessfully() {
         // 1. Создаём владельца
-        UserDto user = new UserDto();
-        user.setEmail("item_owner_" + System.nanoTime() + "@example.com");
-        user.setName("Item Owner");
+        UserDto user = new UserDto(null, "item_owner_" + System.nanoTime() + "@example.com", "Item Owner");
         UserDto savedUser = userService.create(user);
-        assertNotNull(savedUser.getId());
+        assertNotNull(savedUser.id());
 
         // 2. Создаём вещь с реальным ownerId
-        WardrobeItemDto dto = new WardrobeItemDto();
-        dto.setType(ItemType.T_SHIRT);
-        dto.setBrand("Zara");
-        dto.setColor("White");
-        dto.setSeason(Season.SUMMER);
-        dto.setImageUrl("https://example.com/tshirt.jpg");
-        dto.setOwnerId(savedUser.getId());
+        WardrobeItemDto dto = new WardrobeItemDto(
+                null,
+                ItemType.T_SHIRT,
+                "Zara",
+                "White",
+                Season.SUMMER,
+                "https://example.com/tshirt.jpg",
+                savedUser.id()
+        );
 
         var created = wardrobeItemService.create(dto);
 
         // 3. Проверяем, что всё корректно
         assertNotNull(created);
-        assertEquals("Zara", created.getBrand());
-        assertEquals(ItemType.T_SHIRT, created.getType());
-        assertEquals(savedUser.getId(), created.getOwnerId());
+        assertEquals("Zara", created.brand());
+        assertEquals(ItemType.T_SHIRT, created.type());
+        assertEquals(savedUser.id(), created.ownerId());
     }
 }
