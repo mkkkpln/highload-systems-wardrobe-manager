@@ -1,18 +1,16 @@
 package com.example.highloadsystemswardrobemanager.dto;
 
 import com.example.highloadsystemswardrobemanager.entity.enums.OutfitRole;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotNull;
 
-public class OutfitItemLinkDto {
-    @NotNull
-    private Long itemId;
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public record OutfitItemLinkDto(
+        @NotNull
+        Long itemId,  // будет сериализован как item_id
 
-    @NotNull
-    private OutfitRole role;   // TOP/BOTTOM/SHOES/...
-
-    public Long getItemId() { return itemId; }
-    public void setItemId(Long itemId) { this.itemId = itemId; }
-
-    public OutfitRole getRole() { return role; }
-    public void setRole(OutfitRole role) { this.role = role; }
+        @NotNull
+        OutfitRole role
+) {
 }

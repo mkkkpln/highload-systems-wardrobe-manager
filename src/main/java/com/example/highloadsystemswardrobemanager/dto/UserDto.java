@@ -1,26 +1,21 @@
 package com.example.highloadsystemswardrobemanager.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class UserDto {
-    private Long id;
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public record UserDto(
+        Long id,
 
-    @Email
-    @NotBlank
-    private String email;
+        @Email
+        @NotBlank
+        String email,
 
-    @NotBlank
-    @Size(min = 2, max = 100)
-    private String name;
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+        @NotBlank
+        @Size(min = 2, max = 100)
+        String name
+) {
 }
