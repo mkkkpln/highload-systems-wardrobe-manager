@@ -1,4 +1,4 @@
-package com.example.highloadsystemswardrobemanager;
+package com.example.highloadsystemswardrobemanager.integration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -1,4 +1,4 @@
-package com.example.highloadsystemswardrobemanager;
+package com.example.highloadsystemswardrobemanager.controller;
 
 import com.example.highloadsystemswardrobemanager.controller.UserController;
 import com.example.highloadsystemswardrobemanager.dto.UserDto;
