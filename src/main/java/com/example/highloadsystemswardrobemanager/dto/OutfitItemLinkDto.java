@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record OutfitItemLinkDto(
         @NotNull
-        Long itemId,  // будет сериализован как item_id
+        Long itemId,
 
         @NotNull
         OutfitRole role

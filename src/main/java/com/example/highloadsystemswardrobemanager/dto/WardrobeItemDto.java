@@ -23,9 +23,9 @@ public record WardrobeItemDto(
 
         @NotBlank
         @Size(max = 500)
-        String imageUrl,  // будет сериализован как image_url
+        String imageUrl,
 
         @NotNull
-        Long ownerId  // будет сериализован как owner_id
+        Long ownerId
 ) {
 }
