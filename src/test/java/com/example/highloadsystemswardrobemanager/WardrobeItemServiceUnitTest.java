@@ -37,7 +37,7 @@ class WardrobeItemServiceUnitTest {
         when(mapper.toDto(any(WardrobeItem.class))).thenReturn(new WardrobeItemDto());
 
         // page < 0 -> 0; size > 50 -> 50
-        service.getPagedWithCount(-3, 1000);
+        service.getItemsUpTo50(-3, 1000);
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
         verify(itemRepository).findAll(captor.capture());

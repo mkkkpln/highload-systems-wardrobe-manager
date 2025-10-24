@@ -46,7 +46,7 @@ class WardrobeItemControllerTest {
     @Test
     @DisplayName("GET /items/{id} — вернуть вещь по ID")
     void getById() throws Exception {
-        Mockito.when(wardrobeItemService.getByIdOr404(1L))
+        Mockito.when(wardrobeItemService.getById(1L))
                 .thenReturn(sampleItem());
 
         mockMvc.perform(get("/items/1"))
@@ -111,7 +111,7 @@ class WardrobeItemControllerTest {
     void getPagedItems() throws Exception {
         var dtoList = List.of(sampleItem());
         var page = new org.springframework.data.domain.PageImpl<>(dtoList);
-        Mockito.when(wardrobeItemService.getPagedWithCount(0, 10)).thenReturn(page);
+        Mockito.when(wardrobeItemService.getItemsUpTo50(0, 10)).thenReturn(page);
 
         mockMvc.perform(get("/items/paged?page=0&size=10"))
                 .andExpect(status().isOk())

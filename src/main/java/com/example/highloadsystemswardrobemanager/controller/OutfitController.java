@@ -41,7 +41,7 @@ public class OutfitController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<OutfitDto> getById(@PathVariable @Min(1) Long id) { // <-- ID >= 1
-        return ResponseEntity.ok(outfitService.getByIdOr404(id));
+        return ResponseEntity.ok(outfitService.getById(id));
     }
 
     @Operation(summary = "Создать новый образ", description = "Создает новый образ на основе переданных данных")
@@ -74,7 +74,7 @@ public class OutfitController {
     public ResponseEntity<List<OutfitDto>> getPaged(
             @RequestParam(defaultValue = "0") @Min(0) int page,      // <-- page >= 0
             @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) { // <-- 1..50
-        var result = outfitService.getPaged(page, size);
+        var result = outfitService.getOutfitsUpTo50(page, size);
         return ResponseEntity
                 .ok()
                 .header("X-Total-Count", String.valueOf(result.totalCount()))

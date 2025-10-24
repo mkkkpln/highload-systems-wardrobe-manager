@@ -61,7 +61,7 @@ class OutfitControllerTest {
         dto.setUserId(1L);
 
         var result = new PagedResult<>(List.of(dto), 5L);
-        when(outfitService.getPaged(0, 5)).thenReturn(result);
+        when(outfitService.getOutfitsUpTo50(0, 5)).thenReturn(result);
 
         mockMvc.perform(get("/outfits/paged?page=0&size=5"))
                 .andExpect(status().isOk())
@@ -120,7 +120,7 @@ class OutfitControllerTest {
     // --- GET /{id} not found -> 404 ---
     @Test
     void getById_notFound_returns404() throws Exception {
-        when(outfitService.getByIdOr404(123L)).thenThrow(new NotFoundException("Outfit not found: 123"));
+        when(outfitService.getById(123L)).thenThrow(new NotFoundException("Outfit not found: 123"));
 
         mockMvc.perform(get("/outfits/{id}", 123))
                 .andExpect(status().isNotFound())
@@ -131,7 +131,7 @@ class OutfitControllerTest {
     // --- Paged generic error -> 500 (через GlobalExceptionHandler) ---
     @Test
     void paged_genericException_returns500() throws Exception {
-        when(outfitService.getPaged(0, 10)).thenThrow(new RuntimeException("boom"));
+        when(outfitService.getOutfitsUpTo50(0, 10)).thenThrow(new RuntimeException("boom"));
 
         mockMvc.perform(get("/outfits/paged").param("page", "0").param("size", "10"))
                 .andExpect(status().isInternalServerError())

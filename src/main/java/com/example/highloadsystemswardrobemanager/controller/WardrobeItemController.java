@@ -45,7 +45,7 @@ public class WardrobeItemController {
     public ResponseEntity<List<WardrobeItemDto>> getPagedWithCount(
             @RequestParam(defaultValue = "0") @Min(0) int page,              // <— page >= 0
             @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) {  // <— size 1..50
-        var pageResult = itemService.getPagedWithCount(page, size);
+        var pageResult = itemService.getItemsUpTo50(page, size);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Total-Count", String.valueOf(pageResult.getTotalElements()));
@@ -73,7 +73,7 @@ public class WardrobeItemController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<WardrobeItemDto> getById(@PathVariable @Min(1) Long id) { // <— id >= 1
-        return ResponseEntity.ok(itemService.getByIdOr404(id));
+        return ResponseEntity.ok(itemService.getById(id));
     }
 
     @Operation(summary = "Добавить новую вещь", description = "Создает новую вещь в гардеробе пользователя")

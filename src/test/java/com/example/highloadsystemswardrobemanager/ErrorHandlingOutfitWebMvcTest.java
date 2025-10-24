@@ -52,7 +52,7 @@ class ErrorHandlingOutfitWebMvcTest {
     // --- 404 от GlobalExceptionHandler (NotFoundException) ---
     @Test
     void notFound_returns404() throws Exception {
-        when(outfitService.getByIdOr404(123L))
+        when(outfitService.getById(123L))
                 .thenThrow(new NotFoundException("Outfit not found: 123"));
 
         mvc.perform(get("/outfits/{id}", 123))

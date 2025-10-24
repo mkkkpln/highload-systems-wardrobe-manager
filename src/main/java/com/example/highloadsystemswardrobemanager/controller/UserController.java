@@ -46,7 +46,7 @@ public class UserController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getById(@PathVariable @Min(1) Long id) { // <-- ID >= 1
-        return ResponseEntity.ok(userService.getByIdOr404(id));
+        return ResponseEntity.ok(userService.getById(id));
     }
 
     @Operation(
