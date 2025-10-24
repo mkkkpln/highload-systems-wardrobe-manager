@@ -36,16 +36,16 @@ public class OutfitService {
 
     @Transactional
     public OutfitDto create(OutfitDto dto) {
-        User user = userService.getEntityById(dto.getUserId());
+        User user = userService.getEntityById(dto.userId());
 
         Outfit outfit = mapper.toEntity(dto);
         outfit.setUser(user);
 
-        if (dto.getItems() != null) {
+        if (dto.items() != null) {
             int idx = 0;
-            for (OutfitItemLinkDto link : dto.getItems()) {
-                WardrobeItem item = wardrobeItemService.getEntityById(link.getItemId());
-                outfit.addItem(item, link.getRole(), idx++);
+            for (OutfitItemLinkDto link : dto.items()) {
+                WardrobeItem item = wardrobeItemService.getEntityById(link.itemId());
+                outfit.addItem(item, link.role(), idx++);
             }
         }
 
@@ -57,14 +57,14 @@ public class OutfitService {
         Outfit outfit = outfitRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Outfit not found: " + id));
 
-        outfit.setTitle(dto.getTitle());
+        outfit.setTitle(dto.title());
         outfit.clearItems();
 
-        if (dto.getItems() != null) {
+        if (dto.items() != null) {
             int idx = 0;
-            for (OutfitItemLinkDto link : dto.getItems()) {
-                WardrobeItem item = wardrobeItemService.getEntityById(link.getItemId());
-                outfit.addItem(item, link.getRole(), idx++);
+            for (OutfitItemLinkDto link : dto.items()) {
+                WardrobeItem item = wardrobeItemService.getEntityById(link.itemId());
+                outfit.addItem(item, link.role(), idx++);
             }
         }
 

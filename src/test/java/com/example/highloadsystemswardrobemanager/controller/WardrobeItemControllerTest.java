@@ -31,15 +31,15 @@ class WardrobeItemControllerTest {
     private WardrobeItemService wardrobeItemService;
 
     private WardrobeItemDto sampleItem() {
-        WardrobeItemDto dto = new WardrobeItemDto();
-        dto.setId(1L);
-        dto.setType(ItemType.T_SHIRT);
-        dto.setBrand("Zara");
-        dto.setColor("White");
-        dto.setSeason(Season.SUMMER);
-        dto.setImageUrl("https://example.com/image.jpg");
-        dto.setOwnerId(10L);
-        return dto;
+        return new WardrobeItemDto(
+                1L,
+                ItemType.T_SHIRT,
+                "Zara",
+                "White",
+                Season.SUMMER,
+                "https://example.com/image.jpg",
+                10L
+        );
     }
 
 

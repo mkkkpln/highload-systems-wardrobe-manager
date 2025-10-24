@@ -26,14 +26,12 @@ class UserIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldCreateAndRetrieveUser() {
-        UserDto dto = new UserDto();
-        dto.setName("IntegrationUser");
-        dto.setEmail("integration@example.com");
+        UserDto dto = new UserDto(null, "integration@example.com", "IntegrationUser");
 
         UserDto created = userService.create(dto);
-        assertNotNull(created.getId());
+        assertNotNull(created.id());
 
-        UserDto found = userService.getById(created.getId());
-        assertEquals("IntegrationUser", found.getName());
+        UserDto found = userService.getById(created.id());
+        assertEquals("IntegrationUser", found.name());
     }
 }
