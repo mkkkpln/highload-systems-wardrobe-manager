@@ -45,8 +45,8 @@ public class UserService {
     public UserDto update(Long id, UserDto dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found: " + id));
-        user.setEmail(dto.getEmail());
-        user.setName(dto.getName());
+        user.setEmail(dto.email());
+        user.setName(dto.name());
         return userMapper.toDto(userRepository.save(user));
     }
 

@@ -44,7 +44,7 @@ public class WardrobeItemService {
     }
 
     public WardrobeItemDto create(WardrobeItemDto dto) {
-        User owner = userService.getEntityById(dto.getOwnerId());
+        User owner = userService.getEntityById(dto.ownerId());
 
         WardrobeItem entity = mapper.toEntity(dto);
         entity.setOwner(owner);
