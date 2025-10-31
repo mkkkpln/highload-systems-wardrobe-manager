@@ -45,7 +45,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Некорректный ID")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable @Min(1) Long id) { // <-- ID >= 1
+    public ResponseEntity<UserDto> getById(@PathVariable @Min(1) Long id) {  // <-- ID >= 1
         return ResponseEntity.ok(userService.getById(id));
     }
 
