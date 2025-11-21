@@ -135,6 +135,12 @@ curl -i -X POST "http://localhost:8080/outfits" -H "Content-Type: application/js
 <img width="735" height="582" alt="image" src="https://github.com/user-attachments/assets/1c9bbbf2-1819-4493-959e-9a3066999d7b" />
 
 
+target/site/jacoco/index.html
+
+
+<img width="1470" height="358" alt="image" src="https://github.com/user-attachments/assets/ee890e6b-f1cd-4762-812b-8a93b4d7c816" />
+
+
 ### Git-коммиты
 
 Коммиты — Conventional Commits:
